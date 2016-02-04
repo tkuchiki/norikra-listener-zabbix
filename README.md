@@ -9,7 +9,7 @@ Norikra listener plugin to send performance data for Zabbix.
 
 ## Installation
 
-```
+```shell
 gem install norikra-listener-zabbix
 ```
 
@@ -19,7 +19,7 @@ Add your query with group ZABBIX(zabbix_server,zabbix_host,preifx_item_key,[port
 
 ## Examples
 
-```
+```sql
 SELECT sum(foo) AS sum, avg(foo) AS avg FROM test_table.win:time_batch(1 min)
 -- group ZABBIX(localhost, zabbix host, foo.bar)
 ```
@@ -32,6 +32,17 @@ Send data `sum` and `avg` to item key `foo.bar.sum`, `foo.bar.avg`.
 - Type: `Zabbix trapper`
 - Type of information: `Numeric (float)`
 
+## Test
+
+```shell
+rake [LOGLEVEL=ERROR]
+```
+
+```shell
+rake LOGLEVEL=DEBUG
+```
+
+Set loglevel as `DEBUG`.
 
 ## Misc
 
