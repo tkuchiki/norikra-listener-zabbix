@@ -15,7 +15,7 @@ gem install norikra-listener-zabbix
 
 ## Usage
 
-Add your query with group ZABBIX(zabbix_server,zabbix_host,preifx_item_key,[port=10051]).
+Add your query with group `ZABBIX(zabbix_server,zabbix_host,preifx_item_key,[port=10051])`.
 
 ## Examples
 
@@ -28,7 +28,7 @@ Send data `sum` and `avg` to item key `foo.bar.sum`, `foo.bar.avg`.
 
 ### Zabbix Items
 
-- Key: `foo.bar.svg`
+- Key: `foo.bar.avg`
 - Type: `Zabbix trapper`
 - Type of information: `Numeric (float)`
 
