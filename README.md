@@ -47,3 +47,7 @@ Set loglevel as `DEBUG`.
 ## Misc
 
 Many codes was copied from [fujiwara/fluent-plugin-zabbix](https://github.com/fujiwara/fluent-plugin-zabbix/blob/master/lib/fluent/plugin/out_zabbix.rb).
+
+## License
+
+GPLv2
