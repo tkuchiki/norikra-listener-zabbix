@@ -40,7 +40,7 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
     assert_equal listener.zabbix_server, args[0]
     assert_equal listener.host, args[1]
-    assert_equal listener.prefix_item_key
+    assert_equal listener.prefix_item_key, args[2]
     assert_equal listener.port, 10051
 
     listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix,60051", "query_name", "ZABBIX(localhost,zabbix-host,prefix,60051)")
