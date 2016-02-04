@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["kuchiki.taku@gmail.com"]
   spec.summary       = %q{Norikra listener plugin to send performance data for Zabbix.}
   spec.description   = %q{Norikra listener plugin to send performance data for Zabbix.}
-  spec.homepage      = "https://github.com/tkuchiki/norikra-lilstener-zabbix"
+  spec.homepage      = "https://github.com/tkuchiki/norikra-listener-zabbix"
   spec.license       = "GPLv2"
   spec.platform      = "java"
 
