@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "norikra-listener-zabbix"
-  spec.version       = "0.1.0"
+  spec.version       = "0.2.0"
   spec.authors       = ["KUCHIKI Taku"]
   spec.email         = ["kuchiki.taku@gmail.com"]
   spec.summary       = %q{Norikra listener plugin to send performance data for Zabbix.}
