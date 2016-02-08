@@ -7,7 +7,7 @@ include Norikra::Log
 module Norikra
   module Listener
     class Zabbix < Norikra::Listener::Base
-      attr_reader :zabbix_server, :host, :prefix_item_key, :port
+      attr_reader :zabbix_server, :zabbix_host, :prefix_item_key, :port
       
       def self.label
         "ZABBIX"
@@ -47,13 +47,12 @@ module Norikra
         super
         args = Zabbix::parse_argument(argument)
         @zabbix_server, @port = Zabbix::split_host_port(args[0])
-        @host = args[1]
+        @zabbix_host = args[1]
         @prefix_item_key = args[2]
         
         raise Norikra::ArgumentError, "zabbix_server is not specified" unless @zabbix_server
         raise Norikra::ArgumentError, "invalid port: #{@port}" if @port == 0
-        raise Norikra::ArgumentError, "host is not specified" unless @host
-        raise Norikra::ArgumentError, "prefix_item_key is not specified" unless @prefix_item_key
+        raise Norikra::ArgumentError, "zabbix_host is not specified" unless @zabbix_host
       end
 
       def process_async(events)
@@ -62,14 +61,22 @@ module Norikra
         events.each do |time, record|
           t = time if t.nil?
           record.each do |key, value|
-            data.push({ host: @host, time: time.to_i, key: "#{@prefix_item_key}.#{key}", value: format_value(value) })
+            data.push({ host: @zabbix_host, time: time.to_i, key: format_key(key), value: format_value(value) })
           end
         end
-        debug "send data #{@zabbix_sever}:#{@port} #{@host} #{data}"
+        debug "send data #{@zabbix_sever}:#{@port} #{@zabbix_host} #{data}"
         begin
           send(t, data)
         rescue => e
           warn "send data failed #{e}"
+        end
+      end
+
+      def format_key(key)
+        if @prefix_item_key.nil? || @prefix_item_key.empty?
+          key.gsub(/\$/, ".")
+        else
+          "#{@prefix_item_key}.#{key}"
         end
       end
 

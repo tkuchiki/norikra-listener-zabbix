@@ -52,15 +52,29 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     args = ["localhost", "zabbix-host", "prefix"]
     listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
     assert_equal listener.zabbix_server, args[0]
-    assert_equal listener.host, args[1]
+    assert_equal listener.zabbix_host, args[1]
     assert_equal listener.prefix_item_key, args[2]
     assert_equal listener.port, 10051
 
     listener = Norikra::Listener::Zabbix.new("localhost:60051,zabbix-host,prefix", "query_name", "ZABBIX(localhost:60051,zabbix-host,prefix)")
     assert_equal listener.zabbix_server, args[0]
-    assert_equal listener.host, args[1]
+    assert_equal listener.zabbix_host, args[1]
     assert_equal listener.prefix_item_key, args[2]
     assert_equal listener.port, 60051
+  end
+
+  def test_format_key
+    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
+    assert_equal "prefix.foo", listener.format_key("foo")
+
+    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix.foo", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
+    assert_equal "prefix.foo.bar", listener.format_key("bar")
+
+    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
+    assert_equal "foobar", listener.format_key("foobar")
+
+    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
+    assert_equal "foo.bar.baz", listener.format_key("foo$bar$baz")
   end
 
   def test_format_value
@@ -104,6 +118,10 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     t = do_tcpserver(response)
     
     listener = Norikra::Listener::Zabbix.new("localhost:#{@port},zabbix-host,prefix", "query_name", "ZABBIX(localhost:#{@port},zabbix-host,prefix)")
+    assert listener.process_async([[1454556814, {"val1"=>0, "val2"=>1.2345,}]])
+
+    # IPv6
+    listener = Norikra::Listener::Zabbix.new("[::1]:#{@port},zabbix-host,prefix", "query_name", "ZABBIX([::1]:#{@port},zabbix-host,prefix)")
     assert listener.process_async([[1454556814, {"val1"=>0, "val2"=>1.2345,}]])
     
     t.exit 
