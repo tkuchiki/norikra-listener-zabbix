@@ -17,18 +17,43 @@ module Norikra
         args.split(",").map(&:strip)
       end
 
+      def self.split_host_port(address)
+        colon = address.count(":")
+        
+        case
+        when colon == 0 # IPv4 or FQDN
+          host = address
+          port = 10051
+        when colon == 1 # IPv4 or FQDN
+          hosts = address.split(":")
+          len   = hosts.size - 1
+          host  = hosts[0, len].join(":")
+          port  = hosts[len].to_i
+        when colon >= 2 # IPv6
+          begin
+            hosts = address.match(/\[(.+)\]:?(.+)?/)
+            host  = hosts[1]
+            port  = (hosts[2] || 10051).to_i
+          rescue
+            host = nil
+            port = nil
+          end
+        end
+
+        [host, port]
+      end
+
       def initialize(argument, query_name, query_group)
         super
         args = Zabbix::parse_argument(argument)
-        @zabbix_server = args[0]
+        @zabbix_server, @port = Zabbix::split_host_port(args[0])
         @host = args[1]
         @prefix_item_key = args[2]
-        @port = args[3].nil? ? 10051 : args[3].to_i
         
         raise Norikra::ArgumentError, "zabbix_server is not specified" unless @zabbix_server
+        raise Norikra::ArgumentError, "invalid port: #{@port}" if @port == 0
         raise Norikra::ArgumentError, "host is not specified" unless @host
         raise Norikra::ArgumentError, "prefix_item_key is not specified" unless @prefix_item_key
-        raise Norikra::ArgumentError, "invalid port: #{@port}" if @port == 0
       end
 
       def process_async(events)

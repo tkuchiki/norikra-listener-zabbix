@@ -35,6 +35,19 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     assert_equal Norikra::Listener::Zabbix.parse_argument(" localhost, zabbix-host , prefix "), args
   end
 
+  def test_split_host_port
+    assert_equal Norikra::Listener::Zabbix.split_host_port("localhost"), ["localhost", 10051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("localhost:60051"), ["localhost", 60051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("127.0.0.1"), ["127.0.0.1", 10051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("127.0.0.1:60051"), ["127.0.0.1", 60051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("[::1]"), ["::1", 10051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("[::1]:60051"), ["::1", 60051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("[2001:DB8:0:0:8:800:200C:417A]"), ["2001:DB8:0:0:8:800:200C:417A", 10051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("[2001:DB8:0:0:8:800:200C:417A]:60051"), ["2001:DB8:0:0:8:800:200C:417A", 60051]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("::1"), [nil, nil]
+    assert_equal Norikra::Listener::Zabbix.split_host_port("::1:60051"), [nil, nil]
+  end
+
   def test_initialize
     args = ["localhost", "zabbix-host", "prefix"]
     listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix", "query_name", "ZABBIX(localhost,zabbix-host,prefix)")
@@ -43,7 +56,7 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     assert_equal listener.prefix_item_key, args[2]
     assert_equal listener.port, 10051
 
-    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix,60051", "query_name", "ZABBIX(localhost,zabbix-host,prefix,60051)")
+    listener = Norikra::Listener::Zabbix.new("localhost:60051,zabbix-host,prefix", "query_name", "ZABBIX(localhost:60051,zabbix-host,prefix)")
     assert_equal listener.zabbix_server, args[0]
     assert_equal listener.host, args[1]
     assert_equal listener.prefix_item_key, args[2]
@@ -70,7 +83,7 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     end
     t = do_tcpserver(response)
     
-    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix,#{@port}", "query_name", "ZABBIX(localhost,zabbix-host,prefix,#{@port})")
+    listener = Norikra::Listener::Zabbix.new("localhost:#{@port},zabbix-host,prefix", "query_name", "ZABBIX(localhost:#{@port},zabbix-host,prefix)")
     epoch = Time.now.to_i
     data = [{ host: "zabbix-host", time: epoch, key: "prefix.val1", value: 1.2345 }]
     refute listener.send(epoch, data)
@@ -90,7 +103,7 @@ class Norikra::Listener::ZabbixTest < Minitest::Test
     end
     t = do_tcpserver(response)
     
-    listener = Norikra::Listener::Zabbix.new("localhost,zabbix-host,prefix,#{@port}", "query_name", "ZABBIX(localhost,zabbix-host,prefix,#{@port})")
+    listener = Norikra::Listener::Zabbix.new("localhost:#{@port},zabbix-host,prefix", "query_name", "ZABBIX(localhost:#{@port},zabbix-host,prefix)")
     assert listener.process_async([[1454556814, {"val1"=>0, "val2"=>1.2345,}]])
     
     t.exit 
