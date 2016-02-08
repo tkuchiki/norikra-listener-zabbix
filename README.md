@@ -27,12 +27,12 @@ SELECT sum(foo) AS sum, avg(foo) AS avg FROM test_table.win:time_batch(1 min)
 Send data `sum` and `avg` to item key `foo.bar.sum`, `foo.bar.avg`.
 
 ```sql
-SELECT sum(foo) AS `bar@foo@sum`, avg(foo) AS `bar@foo@avg` FROM test_table.win:time_batch(1 min)
+SELECT sum(foo) AS `bar$foo$sum`, avg(foo) AS `bar$foo$avg` FROM test_table.win:time_batch(1 min)
 -- group ZABBIX(localhost, zabbix host)
 ```
 
 Send data `sum` and `avg` to item key `bar.foo.sum`, `bar.foo.avg`.  
-Replace `@` with `.`.  
+Replace `$` with `.`.  
 
 >Identifiers cannot contain the "." (dot) character, i.e. "vol.price" is not a valid identifier for the rename syntax.
 
