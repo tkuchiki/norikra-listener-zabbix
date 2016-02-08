@@ -15,7 +15,7 @@ gem install norikra-listener-zabbix
 
 ## Usage
 
-Add your query with group `ZABBIX(zabbix_server,zabbix_host,preifx_item_key,[port=10051])`.
+Add your query with group `ZABBIX(zabbix_server[:port=10051],zabbix_host[,preifx_item_key])`.
 
 ## Examples
 
@@ -25,6 +25,25 @@ SELECT sum(foo) AS sum, avg(foo) AS avg FROM test_table.win:time_batch(1 min)
 ```
 
 Send data `sum` and `avg` to item key `foo.bar.sum`, `foo.bar.avg`.
+
+```sql
+SELECT sum(foo) AS `bar@foo@sum`, avg(foo) AS `bar@foo@avg` FROM test_table.win:time_batch(1 min)
+-- group ZABBIX(localhost, zabbix host)
+```
+
+Send data `sum` and `avg` to item key `bar.foo.sum`, `bar.foo.avg`.  
+Replace `@` with `.`.  
+
+>Identifiers cannot contain the "." (dot) character, i.e. "vol.price" is not a valid identifier for the rename syntax.
+
+See: [5.3.4. Renaming event properties](http://www.espertech.com/esper/release-5.2.0/esper-reference/html/epl_clauses.html#epl-select-renaming)
+
+```sql
+SELECT sum(foo) AS sum, avg(foo) AS avg FROM test_table.win:time_batch(1 min)
+-- group ZABBIX([::1], zabbix host)
+```
+
+IPv6 syntax `[IPADDR]:PORT`.
 
 ### Zabbix Items
 
